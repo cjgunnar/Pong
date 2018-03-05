@@ -1,5 +1,7 @@
 import java.awt.Graphics;
 
+import javax.swing.JOptionPane;
+
 /**
  * Displays the score
  * @author cjgunnar
@@ -21,11 +23,24 @@ public class ScoreBoard extends Sprite
 	public void scoreLeft()
 	{
 		leftScore++;
+		
+		if(leftScore == 10)
+		{
+			JOptionPane.showConfirmDialog(null, "Left Wins!");
+			reset();
+		}
+			
 	}
 	
 	public void scoreRight()
 	{
 		rightScore++;
+		
+		if(rightScore == 10)
+		{
+			JOptionPane.showMessageDialog(null, "Left Wins!");
+			reset();
+		}
 	}
 	
 	public int getLeftScore()

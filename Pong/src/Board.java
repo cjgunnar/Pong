@@ -46,6 +46,7 @@ public class Board extends JPanel implements ActionListener
 	/** List of all the sprites */
 	ArrayList<Sprite> sprites;
 	
+	/** Create the Board */
 	public Board()
 	{
 		createSprites();
@@ -178,7 +179,7 @@ public class Board extends JPanel implements ActionListener
 		leftPad.move();
 		rightPad.move();
 		
-		checkCollisions();
+		checkCollisions();			
 		
 		//check if someone scored
 		
@@ -250,22 +251,24 @@ public class Board extends JPanel implements ActionListener
 		{
 			int key = e.getKeyCode();
 			
+			int speed = Paddle.SPEED;
+			
 			//respond to keypress
 			if(key == RIGHT_UP)
 			{
-				rightPad.setDY(-1);
+				rightPad.setDY(-speed);
 			}
 			else if(key == RIGHT_DOWN)
 			{
-				rightPad.setDY(1);
+				rightPad.setDY(speed);
 			}
 			else if(key == LEFT_UP)
 			{
-				leftPad.setDY(-1);
+				leftPad.setDY(-speed);
 			}
 			else if(key == LEFT_DOWN)
 			{
-				leftPad.setDY(1);
+				leftPad.setDY(speed);
 			}
 		}
 		

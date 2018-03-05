@@ -8,10 +8,10 @@ import java.awt.Graphics;
  */
 public class Paddle extends Sprite
 {
-	static final int WIDTH = 20;
-	static final int HEIGHT = 200;
+	static final int WIDTH = 10;
+	static final int HEIGHT = 100;
 	
-	static final int SPEED = 10;
+	static final int SPEED = 2;
 	
 	static final String NAME = "paddle";
 	
