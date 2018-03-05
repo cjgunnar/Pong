@@ -1,4 +1,5 @@
 import java.awt.Graphics;
+import java.awt.Rectangle;
 
 /**
  * Abstract class of sprites
@@ -7,6 +8,9 @@ import java.awt.Graphics;
  */
 public abstract class Sprite
 {
+	/** Used to identify in collisions */
+	protected String name;
+	
 	/** Current x pos */
 	int x;
 	/** Current y pos */
@@ -22,6 +26,11 @@ public abstract class Sprite
 	/** Width of the sprite */
 	int width;
 	
+	/**
+	 * Create a new Sprite with starting positions (x, y)
+	 * @param startX X
+	 * @param startY Y
+	 */
 	public Sprite(int startX, int startY)
 	{
 		x = startX;
@@ -34,22 +43,27 @@ public abstract class Sprite
 	 */
 	public abstract void draw(Graphics g);
 	
+	/**
+	 * Called when this sprite collides with something
+	 * @param other the sprite this collided with
+	 */
+	public abstract void onCollision(Sprite other);
+	
 	public void move()
 	{
 		//update position
 		x += dx;
 		y += dy;
-		
-		//check boundaries
-		if(x < 1) //left
-			x = 1;
-		if(y < 1) //top
-			y = 1;
-		if(x > PongWindow.WIDTH) //right
-			x = PongWindow.WIDTH;
-		if(y + height > PongWindow.HEIGHT) //bottom
-			y = PongWindow.HEIGHT - height;
 	}
+	
+	/**
+	 * returns a rectangle representing space taken up by this sprite
+	 * @return
+	 */
+	public Rectangle getBounds() 
+	{
+        return new Rectangle(x, y, width, height);
+    }
 	
 	/**
 	 * Set the direction and speed of x
@@ -61,11 +75,79 @@ public abstract class Sprite
 	}
 	
 	/**
+	 * Returns the direction the sprite is moving in on the x-axis
+	 * @return direction sprite is moving (x)
+	 */
+	public int getDX()
+	{
+		return dx;
+	}
+	
+	/**
 	 * Set the direction and speed of y
 	 * @param dy neg for reverse, use as speed
 	 */
 	public void setDY(int dy)
 	{
 		this.dy = dy;
+	}
+	
+	/**
+	 * Gets the direction the sprite is moving on the y-axis
+	 * @return direction sprite moving (y)
+	 */
+	public int getDY()
+	{
+		return dy;
+	}
+	
+	/**
+	 * @return the height
+	 */
+	public int getHeight()
+	{
+		return height;
+	}
+
+	/**
+	 * @param height the height to set
+	 */
+	public void setHeight(int height)
+	{
+		this.height = height;
+	}
+
+	/**
+	 * @return the width
+	 */
+	public int getWidth()
+	{
+		return width;
+	}
+
+	/**
+	 * @param width the width to set
+	 */
+	public void setWidth(int width)
+	{
+		this.width = width;
+	}
+
+	/**
+	 * Sets the name of the sprite
+	 * @param name Name to set
+	 */
+	public void setName(String name)
+	{
+		this.name = name;
+	}
+	
+	/**
+	 * Gets the name of the sprite
+	 * @return the name of the sprite
+	 */
+	public String getName()
+	{
+		return name;
 	}
 }

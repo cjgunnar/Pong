@@ -1,9 +1,11 @@
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -16,6 +18,9 @@ import javax.swing.Timer;
 @SuppressWarnings("serial")
 public class Board extends JPanel implements ActionListener
 {
+	final static int WIDTH = 700;
+	final static int HEIGHT = 500;
+	
 	final static int WALL_THICKNESS = 2;
 	
 	final static int FRAME_DELAY = 5;
@@ -27,19 +32,11 @@ public class Board extends JPanel implements ActionListener
 	
 	Ball ball;
 	
+	ArrayList<Sprite> sprites;
+	
 	public Board()
 	{
-		int distFromWall = 10;
-
-		//set starting positions of paddles (x, y) so they are centered on height and distFromWall away from L/R border
-		leftPad = new Paddle(distFromWall, (PongWindow.HEIGHT / 2) - (Paddle.HEIGHT / 2));
-		
-		rightPad = new Paddle(PongWindow.WIDTH - Paddle.WIDTH - distFromWall, (PongWindow.HEIGHT / 2) - (Paddle.HEIGHT) / 2);
-		
-		//set starting position of ball in center of screen
-		ball = new Ball(PongWindow.WIDTH / 2 - Ball.SIZE / 2, PongWindow.HEIGHT / 2 - Ball.SIZE);
-		
-		//ball.setDX(1);
+		createSprites();
 		
 		//set the background to be black
 		setBackground(Color.black);
@@ -49,8 +46,80 @@ public class Board extends JPanel implements ActionListener
 		//allow the board to listen
 		setFocusable(true);
 		
+		setSize(WIDTH, HEIGHT);
+		
 		timer = new Timer(FRAME_DELAY, this);
 		timer.start();
+	}
+	
+	/** Create all the sprites */
+	private void createSprites()
+	{
+		sprites = new ArrayList<Sprite>();
+		
+		int distFromWall = 10;
+
+		//set starting positions of paddles (x, y) so they are centered on height and distFromWall away from L/R border
+		leftPad = new Paddle(distFromWall, (HEIGHT / 2) - (Paddle.HEIGHT / 2));
+		
+		rightPad = new Paddle(PongWindow.WIDTH - Paddle.WIDTH - distFromWall, (HEIGHT / 2) - (Paddle.HEIGHT) / 2);
+		
+		//set starting position of ball in center of screen
+		ball = new Ball(PongWindow.WIDTH / 2 - Ball.SIZE / 2, HEIGHT / 2 - Ball.SIZE);
+		
+		createWalls();
+		
+		//add created sprites to sprites list
+		sprites.add(leftPad);
+		sprites.add(rightPad);
+		sprites.add(ball);
+	}
+	
+	/** Creates the boundary walls */
+	private void createWalls()
+	{
+		//create the top wall
+		Sprite topWall = new Sprite(0,0)
+		{
+			@Override
+			public void draw(Graphics g)
+			{
+				g.setColor(Color.white);
+				g.fillRect(x, y, PongWindow.WIDTH, WALL_THICKNESS);
+			}
+			@Override
+			public void onCollision(Sprite other)
+			{
+				// walls won't be colliding with things
+				return;
+			}
+		};
+		topWall.setWidth(PongWindow.WIDTH);
+		topWall.setHeight(WALL_THICKNESS);
+		topWall.setName("wall");
+		
+		//create the bottom wall
+		Sprite bottomWall = new Sprite(0, HEIGHT)
+		{
+			@Override
+			public void draw(Graphics g)
+			{
+				g.setColor(Color.white);
+				g.fillRect(x, y, PongWindow.WIDTH, WALL_THICKNESS);
+			}
+			@Override
+			public void onCollision(Sprite other)
+			{
+				// walls won't be colliding with things
+				return;
+			}
+		};
+		bottomWall.setWidth(PongWindow.WIDTH);
+		bottomWall.setHeight(WALL_THICKNESS);
+		bottomWall.setName("wall");
+		
+		sprites.add(topWall);
+		sprites.add(bottomWall);
 	}
 	
 	@Override
@@ -58,19 +127,32 @@ public class Board extends JPanel implements ActionListener
 	{
 		super.paintComponent(g);
 		
-		//the top wall/boundary
-		g.setColor(Color.white);
-		g.fillRect(0, 0, getWidth(), WALL_THICKNESS);
-		
-		//the bottom wall/boundary
-		g.fillRect(0, getHeight() - WALL_THICKNESS, getWidth(), WALL_THICKNESS);
-		
-		ball.draw(g);
-		
-		leftPad.draw(g);
-		rightPad.draw(g);
+		//draw all the sprites
+		for(Sprite sprite: sprites)
+			sprite.draw(g);
 	}
 
+	private void checkCollisions()
+	{
+		if(sprites == null) {System.out.println("null sprites");}
+		for(Sprite a: sprites)
+		{
+			Rectangle boundA = a.getBounds();
+			for(Sprite b: sprites)
+			{
+				//if is is the same sprite, skip it
+				if(a.equals(b))
+					continue;
+				
+				Rectangle boundB = b.getBounds();
+				
+				//if they intersect, call the collision function
+				if(boundA.intersects(boundB))
+					a.onCollision(b);
+			}
+		}
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent e)
 	{
@@ -78,6 +160,8 @@ public class Board extends JPanel implements ActionListener
 		ball.move();
 		leftPad.move();
 		rightPad.move();
+		
+		checkCollisions();
 		
 		//redraw the screen
 		repaint();
@@ -88,7 +172,7 @@ public class Board extends JPanel implements ActionListener
 	 * @author cjgunnar
 	 *
 	 */
-	class InputHandler extends KeyAdapter
+	private class InputHandler extends KeyAdapter
 	{
 		/**
 		 * CONTROLS

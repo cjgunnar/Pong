@@ -9,7 +9,7 @@ import javax.swing.JFrame;
 public class PongWindow extends JFrame
 {
 	static final int WIDTH = 700;
-	static final int HEIGHT = 500;
+	static final int HEIGHT = 615;
 	
 	public static void main(String[] args)
 	{
