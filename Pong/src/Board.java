@@ -1,14 +1,12 @@
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.Timer;
 
 /**
  * Contains the paddles, walls, score, and runs update timer/keyboard input
@@ -16,7 +14,7 @@ import javax.swing.Timer;
  *
  */
 @SuppressWarnings("serial")
-public class Board extends JPanel implements ActionListener
+public class Board extends JPanel implements Runnable
 {
 	/** Width of the Board */
 	final static int WIDTH = 700;
@@ -29,8 +27,7 @@ public class Board extends JPanel implements ActionListener
 	/** Time between frames (ms) */
 	final static int FRAME_DELAY = 5;
 	
-	/** the frame updater */
-	private Timer timer;
+	private Thread thread;
 	
 	/** The paddle on the left */
 	Paddle leftPad;
@@ -60,9 +57,6 @@ public class Board extends JPanel implements ActionListener
 		setFocusable(true);
 		
 		setSize(WIDTH, HEIGHT);
-		
-		timer = new Timer(FRAME_DELAY, this);
-		timer.start();
 	}
 	
 	/** Create all the sprites */
@@ -171,8 +165,8 @@ public class Board extends JPanel implements ActionListener
 		}
 	}
 	
-	@Override
-	public void actionPerformed(ActionEvent e)
+	
+	public void cycle()
 	{
 		//move everything
 		ball.move();
@@ -195,9 +189,6 @@ public class Board extends JPanel implements ActionListener
 			sb.scoreLeft();
 			newBall();
 		}
-		
-		//redraw the screen
-		repaint();
 	}
 	
 	/** resets the ball and randomly serves it again */
@@ -294,6 +285,63 @@ public class Board extends JPanel implements ActionListener
 			{
 				leftPad.setDY(0);
 			}
+		}
+	}
+
+	@Override
+	public void addNotify()
+	{
+		super.addNotify();
+		
+		thread = new Thread(this);
+        thread.start();
+	}
+	
+	@Override
+	public void run()
+	{
+		/*
+		 * Thread based time allows for the most accurate frame rates
+		 * It runs on a infinite loop, but sleeps based on calculated
+		 * running times of cycle (the main loop) and
+		 * repaint (redraws graphics)
+		 * Ends when frame is closed
+		 */
+		
+		JOptionPane.showMessageDialog(null, "Press OK to Begin");
+		
+		long beforeTime, timeDiff, sleep;
+
+		beforeTime = System.currentTimeMillis();
+
+		while(true) 
+		{
+			//run logic proccesses and redraw graphics
+			cycle();
+			repaint();
+
+			//calculate time between frames
+			timeDiff = System.currentTimeMillis() - beforeTime;
+			sleep = FRAME_DELAY - timeDiff;
+
+			//catch negative problems
+			if (sleep < 0) 
+			{
+				sleep = 2;
+			}
+
+			try 
+			{
+				//sleep extra time
+				Thread.sleep(sleep);
+			}
+			catch (InterruptedException e) 
+			{
+				System.out.println("Interrupted: " + e.getMessage());
+			}
+
+			//reset before time
+			beforeTime = System.currentTimeMillis();
 		}
 	}
 }

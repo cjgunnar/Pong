@@ -26,7 +26,7 @@ public class ScoreBoard extends Sprite
 		
 		if(leftScore == 10)
 		{
-			JOptionPane.showConfirmDialog(null, "Left Wins!");
+			JOptionPane.showConfirmDialog(null, "Right Wins!");
 			reset();
 		}
 			
@@ -62,7 +62,7 @@ public class ScoreBoard extends Sprite
 	@Override
 	public void draw(Graphics g)
 	{
-		int offset = 200;
+		int offset = 500;
 		g.drawString(leftScore + "", x, y);
 		g.drawString(rightScore + "", x + offset, y);
 	}
