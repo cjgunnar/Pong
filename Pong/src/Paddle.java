@@ -11,6 +11,8 @@ public class Paddle extends Sprite
 	static final int WIDTH = 20;
 	static final int HEIGHT = 200;
 	
+	static final int SPEED = 10;
+	
 	public Paddle(int startPosX, int startPosY)
 	{
 		super(startPosX, startPosY);
