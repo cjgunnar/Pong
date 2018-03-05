@@ -26,6 +26,9 @@ public abstract class Sprite
 	/** Width of the sprite */
 	int width;
 	
+	/** Is the sprite visible? */
+	protected boolean visible;
+	
 	/**
 	 * Create a new Sprite with starting positions (x, y)
 	 * @param startX X
@@ -37,6 +40,8 @@ public abstract class Sprite
 		y = startY;
 		
 		name = "none";
+		
+		visible = true;
 	}
 	
 	/**
@@ -172,6 +177,22 @@ public abstract class Sprite
 	public void setWidth(int width)
 	{
 		this.width = width;
+	}
+
+	/**
+	 * @return the visible
+	 */
+	public boolean isVisible()
+	{
+		return visible;
+	}
+
+	/**
+	 * @param visible the visible to set
+	 */
+	public void setVisible(boolean visible)
+	{
+		this.visible = visible;
 	}
 
 	/**

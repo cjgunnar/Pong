@@ -74,9 +74,15 @@ public class Board extends JPanel implements Runnable
 		//set starting position of ball in center of screen
 		ball = new Ball(PongWindow.WIDTH / 2 - Ball.SIZE / 2, HEIGHT / 2 - Ball.SIZE);
 		
+		//set the position and move in random direction
+		newBall();
+		
 		createWalls();
 		
 		sb = new ScoreBoard(PongWindow.WIDTH / 2 - 300, 45);
+		
+		for(int i = 0; i < 10; i++)
+			spawnPowerUp();
 		
 		//add created sprites to sprites list
 		sprites.add(leftPad);
@@ -140,7 +146,8 @@ public class Board extends JPanel implements Runnable
 		
 		//draw all the sprites
 		for(Sprite sprite: sprites)
-			sprite.draw(g);
+			if(sprite.isVisible())
+				sprite.draw(g);
 	}
 
 	/** Checks all sprites in sprite list for intersections and calls onCollision on them */
@@ -165,6 +172,72 @@ public class Board extends JPanel implements Runnable
 		}
 	}
 	
+	private void agePowerUps()
+	{
+		ArrayList<PowerUp> removeList = new ArrayList<>();
+		
+		for(Sprite sprite: sprites)
+		{
+			if(sprite.getName() != null && sprite.getName().equals(PowerUp.NAME))
+			{
+				PowerUp spritePU = (PowerUp)sprite;
+				spritePU.age();
+								
+				if(spritePU.isDespawned() || spritePU.isEffectEnded())
+					removeList.add(spritePU);
+			}
+		}
+		
+		sprites.removeAll(removeList);
+	}
+	
+	private void spawnPowerUp()
+	{
+		PowerUp pu;
+		
+		int yLoc = (int)(Math.random() * HEIGHT);
+		int xLoc = (int)(Math.random() * (WIDTH / 2) + (WIDTH / 4));
+		
+		int types = 1;
+		
+		int random = (int)(Math.random() * types);
+
+		int despawnTime = (int)(Math.random() * 2000) + 2000;
+		
+		//double racket
+		if(random == 0)
+		{
+			pu = new PowerUp(xLoc,yLoc,2000,despawnTime,Color.red)
+			{
+
+				@Override
+				public void startEffect()
+				{
+					if(ball.lastHit != null)
+					{
+						ball.lastHit.setHeight(ball.lastHit.getHeight() * 2);
+						activeSprite = ball.lastHit;
+						active = true;
+					}
+				}
+
+				@Override
+				public void stopEffect()
+				{
+					System.out.println("effect ending");
+					activeSprite.setHeight(activeSprite.getHeight() / 2);
+					
+				}
+
+			};
+		}
+			
+		else
+			pu = null;
+		
+		
+		sprites.add(pu);
+	}
 	
 	public void cycle()
 	{
@@ -174,6 +247,9 @@ public class Board extends JPanel implements Runnable
 		rightPad.move();
 		
 		checkCollisions();			
+		
+		//age the powerups (despawn, effect duration)
+		agePowerUps();
 		
 		//check if someone scored
 		

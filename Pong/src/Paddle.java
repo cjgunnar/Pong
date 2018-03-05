@@ -28,7 +28,7 @@ public class Paddle extends Sprite
 	public void draw(Graphics g)
 	{
 		g.setColor(Color.white);
-		g.fillRect(x, y, WIDTH, HEIGHT);
+		g.fillRect(x, y, width, height);
 	}
 
 	@Override

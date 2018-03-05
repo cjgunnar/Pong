@@ -12,6 +12,8 @@ public class Ball extends Sprite
 	
 	static final String NAME = "ball";
 	
+	Paddle lastHit;
+	
 	public Ball(int startPosX, int startPosY)
 	{
 		super(startPosX, startPosY);
@@ -21,8 +23,7 @@ public class Ball extends Sprite
 		height = SIZE;
 		width = SIZE;
 		
-		dx = -1;
-		dy = -1;
+		lastHit = null;
 	}
 	
 	public void draw(Graphics g)
@@ -34,12 +35,16 @@ public class Ball extends Sprite
 	@Override
 	public void onCollision(Sprite other)
 	{
-		//paddles will handle bouncing back, so do nothing if it hits a paddle
-		
 		//if it hits a wall, then bounce off it on the y-axis only
 		if(other.getName() != null && other.getName().equals("wall"))
 		{
 			dy *= -1;
+		}
+		
+		//set the last hit paddle
+		else if(other.getName() != null && other.getName().equals(Paddle.NAME))
+		{
+			lastHit = (Paddle)other;
 		}
 	}
 }
