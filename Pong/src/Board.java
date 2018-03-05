@@ -18,20 +18,32 @@ import javax.swing.Timer;
 @SuppressWarnings("serial")
 public class Board extends JPanel implements ActionListener
 {
+	/** Width of the Board */
 	final static int WIDTH = 700;
+	/** Height of the Board */
 	final static int HEIGHT = 500;
 	
+	/** Thickness of the border walls */
 	final static int WALL_THICKNESS = 2;
 	
+	/** Time between frames (ms) */
 	final static int FRAME_DELAY = 5;
 	
+	/** the frame updater */
 	private Timer timer;
 	
+	/** The paddle on the left */
 	Paddle leftPad;
+	/** The paddle on the right */
 	Paddle rightPad;
 	
+	/** The ball getting hit around */
 	Ball ball;
 	
+	/** Scoreboard showing the current scores */
+	ScoreBoard sb;
+	
+	/** List of all the sprites */
 	ArrayList<Sprite> sprites;
 	
 	public Board()
@@ -69,10 +81,13 @@ public class Board extends JPanel implements ActionListener
 		
 		createWalls();
 		
+		sb = new ScoreBoard(PongWindow.WIDTH / 2 - 300, 45);
+		
 		//add created sprites to sprites list
 		sprites.add(leftPad);
 		sprites.add(rightPad);
 		sprites.add(ball);
+		sprites.add(sb);
 	}
 	
 	/** Creates the boundary walls */
@@ -125,6 +140,7 @@ public class Board extends JPanel implements ActionListener
 	@Override
 	public void paintComponent(Graphics g)
 	{
+		//paints the background black
 		super.paintComponent(g);
 		
 		//draw all the sprites
@@ -132,6 +148,7 @@ public class Board extends JPanel implements ActionListener
 			sprite.draw(g);
 	}
 
+	/** Checks all sprites in sprite list for intersections and calls onCollision on them */
 	private void checkCollisions()
 	{
 		if(sprites == null) {System.out.println("null sprites");}
@@ -163,8 +180,47 @@ public class Board extends JPanel implements ActionListener
 		
 		checkCollisions();
 		
+		//check if someone scored
+		
+		//went out on left, right scored
+		if(ball.getX() < 0)
+		{
+			sb.scoreRight();
+			newBall();
+		}
+		//went out on right, left scored
+		else if(ball.getX() > PongWindow.WIDTH)
+		{
+			sb.scoreLeft();
+			newBall();
+		}
+		
 		//redraw the screen
 		repaint();
+	}
+	
+	/** resets the ball and randomly serves it again */
+	private void newBall()
+	{
+		//stop the ball from moving
+		ball.stop();
+		
+		//set it back to center of court
+		ball.setX(PongWindow.WIDTH / 2 - Ball.SIZE / 2);
+		ball.setY(HEIGHT / 2 - Ball.SIZE);
+		
+		//randomly decide who to serve ball back to
+		if(Math.random() * 2 >= 1)
+			ball.setDX(-1);
+		else
+			ball.setDX(1);
+		
+		//serve up or down?
+		if(Math.random() * 2 >= 1)
+			ball.setDY(-1);
+		else
+			ball.setDY(1);
+		
 	}
 	
 	/**

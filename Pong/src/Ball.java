@@ -30,18 +30,6 @@ public class Ball extends Sprite
 		g.setColor(Color.white);
 		g.fillRect(x, y, width, height);
 	}
-
-	@Override
-	public void move()
-	{
-		super.move();
-		
-		//check boundaries
-		if(x < 1) //left
-			x = 1;
-		if(x > Board.WIDTH) //right
-			x = Board.WIDTH;
-	}
 	
 	@Override
 	public void onCollision(Sprite other)

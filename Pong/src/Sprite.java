@@ -35,6 +35,8 @@ public abstract class Sprite
 	{
 		x = startX;
 		y = startY;
+		
+		name = "none";
 	}
 	
 	/**
@@ -54,6 +56,13 @@ public abstract class Sprite
 		//update position
 		x += dx;
 		y += dy;
+	}
+	
+	/** Sets motion to 0 */
+	public void stop()
+	{
+		dx = 0;
+		dy = 0;
 	}
 	
 	/**
@@ -101,6 +110,38 @@ public abstract class Sprite
 		return dy;
 	}
 	
+	/**
+	 * @return the x
+	 */
+	public int getX()
+	{
+		return x;
+	}
+
+	/**
+	 * @param x the x to set
+	 */
+	public void setX(int x)
+	{
+		this.x = x;
+	}
+
+	/**
+	 * @return the y
+	 */
+	public int getY()
+	{
+		return y;
+	}
+
+	/**
+	 * @param y the y to set
+	 */
+	public void setY(int y)
+	{
+		this.y = y;
+	}
+
 	/**
 	 * @return the height
 	 */
