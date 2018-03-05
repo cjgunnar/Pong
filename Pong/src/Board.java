@@ -16,7 +16,7 @@ import javax.swing.Timer;
 @SuppressWarnings("serial")
 public class Board extends JPanel implements ActionListener
 {
-	final static int WALL_THICKNESS = 10;
+	final static int WALL_THICKNESS = 2;
 	
 	final static int FRAME_DELAY = 5;
 	
