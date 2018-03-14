@@ -245,7 +245,7 @@ public class Board extends JPanel implements Runnable
 					if(ball.lastHit != null)
 					{
 						//don't do anything if they are already slowed 
-						if(ball.lastHit.getSpeed() <= 0)
+						if(ball.lastHit.getSpeed() <= 1)
 							return;
 						ball.lastHit.setSpeed(ball.lastHit.getSpeed() / 2);
 						activeSprite = ball.lastHit;
