@@ -5,7 +5,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 /**
@@ -28,6 +27,9 @@ public class Board extends JPanel implements Runnable
 	final static int FRAME_DELAY = 5;
 	
 	private Thread thread;
+	
+	/** Bad way to spawn a powerup every so often */
+	private int powerUpSpawn;
 	
 	/** The paddle on the left */
 	Paddle leftPad;
@@ -81,8 +83,9 @@ public class Board extends JPanel implements Runnable
 		
 		sb = new ScoreBoard(PongWindow.WIDTH / 2 - 300, 45);
 		
-		for(int i = 0; i < 10; i++)
-			spawnPowerUp();
+		
+//		for(int i = 0; i < 10; i++)
+//			spawnPowerUp();
 		
 		//add created sprites to sprites list
 		sprites.add(leftPad);
@@ -198,18 +201,19 @@ public class Board extends JPanel implements Runnable
 		int yLoc = (int)(Math.random() * HEIGHT);
 		int xLoc = (int)(Math.random() * (WIDTH / 2) + (WIDTH / 4));
 		
-		int types = 1;
+		int types = 2;
 		
 		int random = (int)(Math.random() * types);
 
 		int despawnTime = (int)(Math.random() * 2000) + 2000;
 		
+		int duration = 5000;
+		
 		//double racket
 		if(random == 0)
 		{
-			pu = new PowerUp(xLoc,yLoc,2000,despawnTime,Color.red)
+			pu = new PowerUp(xLoc,yLoc,duration,despawnTime,Color.red)
 			{
-
 				@Override
 				public void startEffect()
 				{
@@ -217,6 +221,7 @@ public class Board extends JPanel implements Runnable
 					{
 						ball.lastHit.setHeight(ball.lastHit.getHeight() * 2);
 						activeSprite = ball.lastHit;
+						activeSprite.setColorMode(Paddle.DOUBLE_COLOR);
 						active = true;
 					}
 				}
@@ -224,9 +229,36 @@ public class Board extends JPanel implements Runnable
 				@Override
 				public void stopEffect()
 				{
-					System.out.println("effect ending");
 					activeSprite.setHeight(activeSprite.getHeight() / 2);
-					
+					activeSprite.setColorMode(Paddle.DEFAULT_COLOR);
+				}
+
+			};
+		}
+		else if(random == 1)
+		{
+			pu = new PowerUp(xLoc,yLoc,duration,despawnTime,Color.blue)
+			{
+				@Override
+				public void startEffect()
+				{
+					if(ball.lastHit != null)
+					{
+						//don't do anything if they are already slowed 
+						if(ball.lastHit.getSpeed() <= 0)
+							return;
+						ball.lastHit.setSpeed(ball.lastHit.getSpeed() / 2);
+						activeSprite = ball.lastHit;
+						activeSprite.setColorMode(Paddle.SHRINK_COLOR);
+						active = true;
+					}
+				}
+
+				@Override
+				public void stopEffect()
+				{
+					activeSprite.setSpeed(Paddle.DEFAULT_SPEED);
+					activeSprite.setColorMode(Paddle.DEFAULT_COLOR);
 				}
 
 			};
@@ -251,6 +283,12 @@ public class Board extends JPanel implements Runnable
 		//age the powerups (despawn, effect duration)
 		agePowerUps();
 		
+		if(powerUpSpawn > 1000)
+		{
+			spawnPowerUp();
+			powerUpSpawn = 0;
+		}
+		
 		//check if someone scored
 		
 		//went out on left, right scored
@@ -265,6 +303,8 @@ public class Board extends JPanel implements Runnable
 			sb.scoreLeft();
 			newBall();
 		}
+		
+		powerUpSpawn++;
 	}
 	
 	/** resets the ball and randomly serves it again */
@@ -272,6 +312,8 @@ public class Board extends JPanel implements Runnable
 	{
 		//stop the ball from moving
 		ball.stop();
+		
+		ball.lastHit = null;
 		
 		//set it back to center of court
 		ball.setX(PongWindow.WIDTH / 2 - Ball.SIZE / 2);
@@ -318,24 +360,22 @@ public class Board extends JPanel implements Runnable
 		{
 			int key = e.getKeyCode();
 			
-			int speed = Paddle.SPEED;
-			
 			//respond to keypress
 			if(key == RIGHT_UP)
 			{
-				rightPad.setDY(-speed);
+				rightPad.setDY(-rightPad.getSpeed());
 			}
 			else if(key == RIGHT_DOWN)
 			{
-				rightPad.setDY(speed);
+				rightPad.setDY(rightPad.getSpeed());
 			}
 			else if(key == LEFT_UP)
 			{
-				leftPad.setDY(-speed);
+				leftPad.setDY(-leftPad.getSpeed());
 			}
 			else if(key == LEFT_DOWN)
 			{
-				leftPad.setDY(speed);
+				leftPad.setDY(leftPad.getSpeed());
 			}
 		}
 		
@@ -384,12 +424,13 @@ public class Board extends JPanel implements Runnable
 		 * Ends when frame is closed
 		 */
 		
-		JOptionPane.showMessageDialog(null, "Press OK to Begin");
+		//JOptionPane.showMessageDialog(null, "Press OK to Begin");
 		
 		long beforeTime, timeDiff, sleep;
 
 		beforeTime = System.currentTimeMillis();
-
+		
+		//broken when Board destroyed (X Button)
 		while(true) 
 		{
 			//run logic proccesses and redraw graphics

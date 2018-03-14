@@ -26,6 +26,12 @@ public abstract class Sprite
 	/** Width of the sprite */
 	int width;
 	
+	/** Allows sprites do have different "color schemes" that can be set */
+	int colorMode;
+	
+	/** How fast the Sprite is moving in pixels per frame */
+	int speed;
+	
 	/** Is the sprite visible? */
 	protected boolean visible;
 	
@@ -42,6 +48,8 @@ public abstract class Sprite
 		name = "none";
 		
 		visible = true;
+		
+		speed = 0;
 	}
 	
 	/**
@@ -148,6 +156,22 @@ public abstract class Sprite
 	}
 
 	/**
+	 * @return the speed
+	 */
+	public int getSpeed()
+	{
+		return speed;
+	}
+
+	/**
+	 * @param speed the speed to set
+	 */
+	public void setSpeed(int speed)
+	{
+		this.speed = speed;
+	}
+
+	/**
 	 * @return the height
 	 */
 	public int getHeight()
@@ -211,5 +235,21 @@ public abstract class Sprite
 	public String getName()
 	{
 		return name;
+	}
+
+	/**
+	 * @return the colorMode
+	 */
+	public int getColorMode()
+	{
+		return colorMode;
+	}
+
+	/**
+	 * @param colorMode the colorMode to set
+	 */
+	public void setColorMode(int colorMode)
+	{
+		this.colorMode = colorMode;
 	}
 }

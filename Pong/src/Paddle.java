@@ -11,9 +11,13 @@ public class Paddle extends Sprite
 	static final int WIDTH = 10;
 	static final int HEIGHT = 100;
 	
-	static final int SPEED = 2;
+	static final int DEFAULT_SPEED = 2;
 	
 	static final String NAME = "paddle";
+	
+	static final int DEFAULT_COLOR = 0;
+	static final int DOUBLE_COLOR = 1;
+	static final int SHRINK_COLOR = 2;
 	
 	public Paddle(int startPosX, int startPosY)
 	{
@@ -23,11 +27,18 @@ public class Paddle extends Sprite
 		
 		width = WIDTH;
 		height = HEIGHT;
+		
+		speed = DEFAULT_SPEED;
 	}
 	
 	public void draw(Graphics g)
 	{
-		g.setColor(Color.white);
+		if(colorMode == DEFAULT_COLOR)
+			g.setColor(Color.white);
+		else if(colorMode == DOUBLE_COLOR)
+			g.setColor(Color.red);
+		else if(colorMode == SHRINK_COLOR)
+			g.setColor(Color.blue);
 		g.fillRect(x, y, width, height);
 	}
 
