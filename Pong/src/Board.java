@@ -4,6 +4,7 @@ import java.awt.Rectangle;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 
 import javax.swing.JPanel;
 
@@ -24,7 +25,7 @@ public class Board extends JPanel implements Runnable
 	final static int WALL_THICKNESS = 2;
 	
 	/** Time between frames (ms) */
-	final static int FRAME_DELAY = 5;
+	final static int FRAME_DELAY = 2;
 	
 	private Thread thread;
 	
@@ -177,21 +178,29 @@ public class Board extends JPanel implements Runnable
 	
 	private void agePowerUps()
 	{
-		ArrayList<PowerUp> removeList = new ArrayList<>();
-		
-		for(Sprite sprite: sprites)
+		try
 		{
-			if(sprite.getName() != null && sprite.getName().equals(PowerUp.NAME))
+			ArrayList<PowerUp> removeList = new ArrayList<>();
+			
+			for(Sprite sprite: sprites)
 			{
-				PowerUp spritePU = (PowerUp)sprite;
-				spritePU.age();
-								
-				if(spritePU.isDespawned() || spritePU.isEffectEnded())
-					removeList.add(spritePU);
+				if(sprite.getName() != null && sprite.getName().equals(PowerUp.NAME))
+				{
+					PowerUp spritePU = (PowerUp)sprite;
+					spritePU.age();
+									
+					if(spritePU.isDespawned() || spritePU.isEffectEnded())
+						removeList.add(spritePU);
+				}
 			}
+			
+			sprites.removeAll(removeList);
+		}
+		catch(ConcurrentModificationException e)
+		{
+			System.out.println("Concurrent Mod Error: power ups");
 		}
 		
-		sprites.removeAll(removeList);
 	}
 	
 	private void spawnPowerUp()
@@ -235,6 +244,7 @@ public class Board extends JPanel implements Runnable
 
 			};
 		}
+		//slowdown powerup
 		else if(random == 1)
 		{
 			pu = new PowerUp(xLoc,yLoc,duration,despawnTime,Color.blue)

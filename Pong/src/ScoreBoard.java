@@ -26,7 +26,7 @@ public class ScoreBoard extends Sprite
 		
 		if(leftScore == 10)
 		{
-			JOptionPane.showConfirmDialog(null, "Right Wins!");
+			JOptionPane.showMessageDialog(null, "Left Wins!");
 			reset();
 		}
 			
@@ -38,7 +38,7 @@ public class ScoreBoard extends Sprite
 		
 		if(rightScore == 10)
 		{
-			JOptionPane.showMessageDialog(null, "Left Wins!");
+			JOptionPane.showMessageDialog(null, "Right Wins!");
 			reset();
 		}
 	}
